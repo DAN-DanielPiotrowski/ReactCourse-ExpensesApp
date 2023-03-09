@@ -1,51 +1,39 @@
-import React, { useState } from "react";
+import React, { useRef } from "react";
 import "./ExpenseForm.css";
 
 export default function ExpenseForm({ onSaveExpenseData, onCancel }) {
-  const [enteredTitle, setEnteredTitle] = useState("");
-  const [enteredAmount, setEnteredAmount] = useState("");
-  const [enteredDate, setEnteredDate] = useState("");
-  const titleChangeHandler = (event) => {
-    setEnteredTitle(event.target.value);
-  };
-  const amountChangeHandler = (event) => {
-    setEnteredAmount(event.target.value);
-  };
-  const dateChangeHandler = (event) => {
-    setEnteredDate(event.target.value);
-  };
+  const inputTitleRef = useRef();
+  const inputAmountRef = useRef();
+  const inputDateRef = useRef();
+
   const submitHandler = (event) => {
     event.preventDefault();
-    const expenseData = {
-      title: enteredTitle,
-      amount: +enteredAmount,
-      date: new Date(enteredDate),
-    };
-    onSaveExpenseData(expenseData);
-    setEnteredTitle(""); //Two Way Binding example
-    setEnteredAmount("");
-    setEnteredDate("");
+    if (
+      inputTitleRef.current.value.trim().length !== 0 &&
+      inputAmountRef.current.value.trim().length !== 0 &&
+      inputDateRef.current.value.trim().length !== 0
+    ) {
+      const expenseData = {
+        title: inputTitleRef.current.value,
+        amount: +inputAmountRef.current.value,
+        date: new Date(inputDateRef.current.value),
+      };
+      onSaveExpenseData(expenseData);
+      inputTitleRef.current.value = "";
+      inputAmountRef.current.value = "";
+      inputDateRef.current.value = "";
+    }
   };
   return (
     <form onSubmit={submitHandler}>
       <div className="new-expense__controls">
         <div className="new-expense__control">
           <label>Title</label>
-          <input
-            type="text"
-            value={enteredTitle}
-            onChange={titleChangeHandler}
-          />
+          <input type="text" ref={inputTitleRef} />
         </div>
         <div className="new-expense__control">
           <label>Amount</label>
-          <input
-            type="number"
-            min="0.01"
-            step="0.01"
-            value={enteredAmount} //Two Way Binding example
-            onChange={amountChangeHandler}
-          />
+          <input type="number" min="0.01" step="0.01" ref={inputAmountRef} />
         </div>
         <div className="new-expense__control">
           <label>Date</label>
@@ -53,8 +41,7 @@ export default function ExpenseForm({ onSaveExpenseData, onCancel }) {
             type="date"
             min="2019-01-01"
             max="2022-12-31"
-            value={enteredDate}
-            onChange={dateChangeHandler}
+            ref={inputDateRef}
           />
         </div>
       </div>
